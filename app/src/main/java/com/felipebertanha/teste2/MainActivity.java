@@ -13,13 +13,17 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText nomeEditText;
+    private EditText sobrenomeEditText;
     private Button adicionarButton;
     private ListView listaListView;
-    private ArrayAdapter<String> listaAdapter;
-
+    private ListaNomeAdapter listaAdapter;
+    private List<Pessoa> pessoas = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,23 +31,24 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         nomeEditText = findViewById(R.id.main_nome);
+        sobrenomeEditText = findViewById(R.id.main_sobrenome);
         adicionarButton = findViewById(R.id.main_adicionar);
         listaListView = findViewById(R.id.main_lista);
 
         //Criando adapter
-        listaAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        listaAdapter = new ListaNomeAdapter(this, pessoas);
         //Setar adapter na ListView
         listaListView.setAdapter(listaAdapter);
 
         listaListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                final String nomeClickado = listaAdapter.getItem(position);
+                final Pessoa pessoaClickada = (Pessoa) listaAdapter.getItem(position);
 
                 //confirmar exclusao
                 AlertDialog.Builder alertaConfirmacao = new AlertDialog.Builder(MainActivity.this);
                 alertaConfirmacao.setTitle("Confirma exclusão?");
-                alertaConfirmacao.setMessage("Deseja realmente excluir o nome: " + nomeClickado + "?");
+                alertaConfirmacao.setMessage("Deseja realmente excluir o nome: " + pessoaClickada.getNome() + "?");
 
                 alertaConfirmacao.setNegativeButton("Não", new DialogInterface.OnClickListener() {
                     @Override
@@ -55,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                 alertaConfirmacao.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        listaAdapter.remove(nomeClickado);
+                        listaAdapter.remove(pessoaClickada);
                     }
                 });
 
@@ -71,11 +76,12 @@ public class MainActivity extends AppCompatActivity {
     public void adicionarPressionado(View view) {
         //pegar nome digitado
         String nomeDigitado = nomeEditText.getText().toString();
+        String sobrenomeDigitado = sobrenomeEditText.getText().toString();
 
-        exibirToast(nomeDigitado);
+        Pessoa pessoa = new Pessoa(nomeDigitado, sobrenomeDigitado);
 
         //Adicionar na listaaa
-        listaAdapter.add(nomeDigitado);
+        listaAdapter.add(pessoa);
 
     }
 
